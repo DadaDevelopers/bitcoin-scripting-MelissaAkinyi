@@ -127,84 +127,36 @@ Security against key exposure: Public key revealed only when spending
 Protection against substitution attacks: Must match hash exactly
 
 
+ASSIGNMENT B
 
-## Assignment B: HTLC (Hashed Time-Lock Contract)
+HTLC SCRIPT
+OP_IF
+    OP_HASH160 <your_hash_here> OP_EQUALVERIFY
+    <Alice_pubkey> OP_CHECKSIG
+OP_ELSE
+    <locktime> OP_CHECKLOCKTIMEVERIFY OP_DROP
+    <Bob_pubkey> OP_CHECKSIG
+OP_ENDIF
 
-##### HTLC Script
+CLAIM SCRIPT
+<Alice_signature> <Alice_pubkey> <secret> OP_TRUE
 
-OP\_IF
+REFUND SCRIPT
+<Bob_signature> <Bob_pubkey> OP_FALSE
 
-&#x20;   OP\_HASH160 <Hash160(secret)> OP\_EQUALVERIFY
-
-&#x20;   <AlicePubKey> OP\_CHECKSIG
-
-OP\_ELSE
-
-&#x20;   <timeout> OP\_CHECKLOCKTIMEVERIFY OP\_DROP
-
-&#x20;   <BobPubKey> OP\_CHECKSIG
-
-OP\_ENDIF
-
-
-
-Claiming Transaction Script (Alice claims with secret)
-
-<signature\_Alice> <secret> OP\_TRUE
+This HTLC allows Alice to claim funds by revealing the correct preimage before the timeout. If she fails, Bob can reclaim the funds after the locktime using OP_CHECKLOCKTIMEVERIFY. The script ensures atomicity and trustless exchange.
 
 
 
-OP\_TRUE selects the IF branch
-
-Secret is hashed and verified
-
-Alice’s signature is checked
-
-Funds are released to Alice
 
 
 
-Refund Transaction Script (Bob refunds after timeout)
-
-<signature\_Bob> OP\_FALSE
 
 
 
-OP\_FALSE selects the ELSE branch
-
-OP\_CHECKLOCKTIMEVERIFY ensures timeout has passed
-
-Bob provides signature to reclaim funds
 
 
 
-#### Sample Test (Hash and Timeout)
 
 
-
-Secret: mysecret123
-
-
-
-Hash (Hash160): RIPEMD160(SHA256("mysecret123")) = <sample hash>
-
-
-
-Timeout:
-
-
-
-Bitcoin uses block height
-
-1 block ≈ 10 minutes
-
-21 minutes ≈ 2 blocks
-
-Example:
-
-
-
-Current block height: 840000
-
-Timeout: 840002
 
