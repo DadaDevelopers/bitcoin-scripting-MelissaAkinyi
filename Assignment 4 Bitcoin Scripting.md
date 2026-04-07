@@ -62,57 +62,54 @@ Invalid → FALSE
 
 
 
-##### Data Flow Diagram
+### Data Flow Diagram (P2PKH Execution)
 
-Unlocking Script (scriptSig):
-
+**Unlocking Script (scriptSig):**
 <signature> <public key>
 
+**Locking Script (scriptPubKey):**
+OP_DUP OP_HASH160 <PubKeyHash> OP_EQUALVERIFY OP_CHECKSIG
 
+---
 
-#### Execution:
+### Step-by-Step Stack Execution
 
+Initial Stack:
+[signature, pubKey]
 
+↓
 
-\[signature, pubKey]
+OP_DUP  
+[signature, pubKey, pubKey]
 
-→ OP\_DUP
+↓
 
-\[signature, pubKey, pubKey]
+OP_HASH160  
+[signature, pubKey, hash(pubKey)]
 
+↓
 
+Push <PubKeyHash>  
+[signature, pubKey, hash(pubKey), expectedHash]
 
-→ OP\_HASH160
+↓
 
-\[signature, pubKey, hash(pubKey)]
+OP_EQUALVERIFY  
+- Compares hash(pubKey) and expectedHash  
+- If equal → continue  
+- If NOT equal → script fails  
 
+Stack becomes:
+[signature, pubKey]
 
+↓
 
-→ Push <PubKeyHash>
+OP_CHECKSIG  
+- Verifies signature using pubKey  
 
-\[signature, pubKey, hash(pubKey), expectedHash]
-
-
-
-→ OP\_EQUALVERIFY
-
-\[signature, pubKey]
-
-
-
-→ OP\_CHECKSIG
-
-\[TRUE / FALSE]
-
-
-
-What Happens if Signature Verification Fails?
-
-OP\_CHECKSIG fails → script returns FALSE
-
-Transaction is invalid
-
-Coins cannot be spent
+Final Stack:
+[TRUE] → Transaction valid  
+[FALSE] → Transaction invalid
 
 ##### 
 
